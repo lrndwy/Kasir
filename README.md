@@ -29,7 +29,13 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-7. Jalankan server dengan command berikut:
+7. Buat super user dengan command berikut:
+
+```bash
+python manage.py createsuperuser
+```
+
+8. Jalankan server dengan command berikut:
 
 ```bash
 python manage.py runserver
