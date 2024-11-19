@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<c-dashboard>
+<div>
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6">Kasir</h1>
+    
+    <!-- Form Transaksi -->
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow mb-6">
+      <h5 class="text-xl font-bold mb-4">Tambah Item</h5>
+      <form method="POST" id="transaksiForm">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_item">
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="mb-6">
+            <label class="block mb-2 text-sm font-medium text-gray-900">Pilih Barang</label>
+            <select name="barang_id" required class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+              <option value="">Pilih Barang</option>
+              {% for barang in barang_list %}
+                <option value="{{ barang.id }}" data-harga="{{ barang.harga }}" data-stok="{{ barang.stok }}">
+                  {{ barang.nama }} (Stok: {{ barang.stok }})
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="mb-6">
+            <label class="block mb-2 text-sm font-medium text-gray-900">Kuantitas</label>
+            <input type="number" name="kuantitas" min="1" required
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          </div>
+          
+          <div class="mb-6">
+            <label class="block mb-2 text-sm font-medium text-gray-900">Harga Satuan</label>
+            <input type="text" id="hargaSatuan" readonly
+              class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+          </div>
+          
+          <div class="mb-6 flex items-end">
+            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">
+              Tambah Item
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabel Item Transaksi -->
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+      <h5 class="text-xl font-bold mb-4">Detail Transaksi</h5>
+      {% if messages %}
+        {% for message in messages %}
+          <div class="p-4 mb-4 text-sm {% if message.tags == 'success' %}text-green-800 bg-green-50{% else %}text-red-800 bg-red-50{% endif %} rounded-lg">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+      
+      <div class="relative overflow-x-auto">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3">No</th>
+              <th scope="col" class="px-6 py-3">Nama Barang</th>
+              <th scope="col" class="px-6 py-3">Harga</th>
+              <th scope="col" class="px-6 py-3">Kuantitas</th>
+              <th scope="col" class="px-6 py-3">Subtotal</th>
+              <th scope="col" class="px-6 py-3">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in detail_transaksi %}
+            <tr class="bg-white border-b">
+              <td class="px-6 py-4">{{ forloop.counter }}</td>
+              <td class="px-6 py-4">{{ item.barang.nama }}</td>
+              <td class="px-6 py-4">Rp {{ item.barang.harga }}</td>
+              <td class="px-6 py-4">{{ item.kuantitas }}</td>
+              <td class="px-6 py-4">Rp {{ item.subtotal }}</td>
+              <td class="px-6 py-4">
+                <form method="POST" class="inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="delete_item">
+                  <input type="hidden" name="item_id" value="{{ item.id }}">
+                  <button type="submit" onclick="return confirm('Yakin ingin menghapus item ini?')" 
+                    class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2">
+                    Hapus
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="font-semibold text-gray-900">
+              <td colspan="4" class="px-6 py-4 text-right">Total:</td>
+              <td class="px-6 py-4">Rp {{ total_harga }}</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      {% if detail_transaksi %}
+      <div class="mt-4 flex justify-end">
+        <form method="POST" class="inline">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="selesai">
+          <button type="submit" class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5">
+            Selesai Transaksi
+          </button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelector('select[name="barang_id"]').addEventListener('change', function() {
+  const selected = this.options[this.selectedIndex];
+  const harga = selected.dataset.harga || '';
+  document.getElementById('hargaSatuan').value = harga ? `Rp ${harga}` : '';
+});
+</script>
+</c-dashboard>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<c-dashboard>
+<div>
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+    
+    <!-- Statistik Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+        <h5 class="text-xl font-bold text-gray-500 mb-2">Total Transaksi Hari Ini</h5>
+        <p class="text-3xl font-bold text-blue-600">{{ transaksi_hari_ini }}</p>
+      </div>
+      
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+        <h5 class="text-xl font-bold text-gray-500 mb-2">Pendapatan Hari Ini</h5>
+        <p class="text-3xl font-bold text-green-600">Rp {{ pendapatan_hari_ini }}</p>
+      </div>
+      
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+        <h5 class="text-xl font-bold text-gray-500 mb-2">Total Barang</h5>
+        <p class="text-3xl font-bold text-purple-600">{{ total_barang }}</p>
+      </div>
+      
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+        <h5 class="text-xl font-bold text-gray-500 mb-2">Stok Menipis</h5>
+        <p class="text-3xl font-bold text-red-600">{{ stok_menipis }}</p>
+      </div>
+    </div>
+
+    <!-- Tabel Barang Stok Menipis -->
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow mb-6">
+      <h5 class="text-xl font-bold mb-4">Barang dengan Stok Menipis</h5>
+      <div class="relative overflow-x-auto">
+        <table class="w-full text-sm text-left text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3">Nama Barang</th>
+              <th scope="col" class="px-6 py-3">Stok Tersisa</th>
+              <th scope="col" class="px-6 py-3">Harga</th>
+              <th scope="col" class="px-6 py-3">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for barang in barang_menipis %}
+            <tr class="bg-white border-b">
+              <td class="px-6 py-4">{{ barang.nama }}</td>
+              <td class="px-6 py-4">{{ barang.stok }}</td>
+              <td class="px-6 py-4">Rp {{ barang.harga }}</td>
+              <td class="px-6 py-4">
+                <a href="{% url 'kelola_barang' %}?edit={{ barang.id }}" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2">
+                  Update Stok
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Transaksi Terakhir -->
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+      <h5 class="text-xl font-bold mb-4">Transaksi Terakhir</h5>
+      <div class="relative overflow-x-auto">
+        <table class="w-full text-sm text-left text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3">ID</th>
+              <th scope="col" class="px-6 py-3">Waktu</th>
+              <th scope="col" class="px-6 py-3">Total</th>
+              <th scope="col" class="px-6 py-3">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for transaksi in transaksi_terakhir %}
+            <tr class="bg-white border-b">
+              <td class="px-6 py-4">#{{ transaksi.id }}</td>
+              <td class="px-6 py-4">{{ transaksi.waktu|date:"d/m/Y H:i" }}</td>
+              <td class="px-6 py-4">Rp {{ transaksi.total_harga }}</td>
+              <td class="px-6 py-4">
+                <a href="{% url 'struk' transaksi.id %}" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2">
+                  Lihat Struk
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</c-dashboard>
+{% endblock %} 

@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<c-dashboard>
+<div>
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6">Manajemen Barang</h1>
+    
+    <!-- Form Tambah/Edit Barang -->
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow mb-6">
+      <h5 class="text-xl font-bold mb-4">{% if barang_edit %}Edit Barang{% else %}Tambah Barang Baru{% endif %}</h5>
+      <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="{% if barang_edit %}edit{% else %}add{% endif %}">
+        {% if barang_edit %}
+          <input type="hidden" name="barang_id" value="{{ barang_edit.id }}">
+        {% endif %}
+        
+        <div class="mb-6">
+          <label class="block mb-2 text-sm font-medium text-gray-900">Nama Barang</label>
+          <input type="text" name="nama" value="{{ barang_edit.nama|default:'' }}" required
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+        </div>
+        
+        <div class="mb-6">
+          <label class="block mb-2 text-sm font-medium text-gray-900">Harga</label>
+          <input type="number" name="harga" value="{{ barang_edit.harga|default:'' }}" required
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+        </div>
+        
+        <div class="mb-6">
+          <label class="block mb-2 text-sm font-medium text-gray-900">Stok</label>
+          <input type="number" name="stok" value="{{ barang_edit.stok|default:'' }}" required
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+        </div>
+        
+        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
+          Simpan
+        </button>
+        {% if barang_edit %}
+          <a href="{% url 'kelola_barang' %}" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
+            Batal
+          </a>
+        {% endif %}
+      </form>
+    </div>
+
+    <!-- Tabel Daftar Barang -->
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+      <h5 class="text-xl font-bold mb-4">Daftar Barang</h5>
+      {% if messages %}
+        {% for message in messages %}
+          <div class="p-4 mb-4 text-sm {% if message.tags == 'success' %}text-green-800 bg-green-50{% else %}text-red-800 bg-red-50{% endif %} rounded-lg">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+      
+      <div class="relative overflow-x-auto">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3">No</th>
+              <th scope="col" class="px-6 py-3">Nama</th>
+              <th scope="col" class="px-6 py-3">Harga</th>
+              <th scope="col" class="px-6 py-3">Stok</th>
+              <th scope="col" class="px-6 py-3">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for barang in barang_list %}
+            <tr class="bg-white border-b">
+              <td class="px-6 py-4">{{ forloop.counter }}</td>
+              <td class="px-6 py-4">{{ barang.nama }}</td>
+              <td class="px-6 py-4">Rp {{ barang.harga }}</td>
+              <td class="px-6 py-4">{{ barang.stok }}</td>
+              <td class="px-6 py-4">
+                <form method="POST" class="inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="delete">
+                  <input type="hidden" name="barang_id" value="{{ barang.id }}">
+                  <a href="?edit={{ barang.id }}" class="text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-3 py-2.5 me-2">
+                    Edit
+                  </a>
+                  <button type="submit" onclick="return confirm('Yakin ingin menghapus?')" 
+                    class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2">
+                    Hapus
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</c-dashboard>
+{% endblock %}
